@@ -83,7 +83,9 @@
     position: absolute; inset: 0;
     width: 100%; height: 100%;
     object-fit: cover;
-    object-position: center 20%;
+    object-position: center -5%; /* mas porcentaje sube la foto */
+    object-position: right -1mm top -5%; /* para fotos de perfil */
+    transform: scale(1.25);
   }
 
   h2 {
@@ -116,6 +118,18 @@
   .edu li { margin-bottom: 3mm; }
   .edu b    { display: block; font-size: 8.7pt; font-weight: 600; color: var(--ink); line-height: 1.25; }
   .edu span { display: block; font-size: 8.2pt; color: var(--slate); }
+  .edu li {
+    transition: transform .18s ease, background-color .18s ease;
+    transform-origin: left center;
+    border-radius: 3mm;
+    padding: 1mm 1.5mm;
+  }
+
+  .edu li:hover,
+  .edu li:focus-within {
+    transform: scale(1.025);
+    background: rgba(255, 255, 255, 0.965);
+  }
 
  /* ---- Habilidades blandas: chips con hover celeste fosforescente ---- */
   .chips { display: flex; flex-wrap: wrap; gap: 1.6mm; }
@@ -125,14 +139,15 @@
     border: .25mm solid #c9dcd7;
     border-radius: 5mm;
     padding: .7mm 2.4mm;
-    cursor: default;
-    transition: color .18s ease, background-color .18s ease, border-color .18s ease,
-                box-shadow .18s ease, transform .18s ease;
+    cursor: pointer;
+    transition: color .20s ease, background-color .20s ease, border-color .20s ease,
+                box-shadow .20s ease, transform .20s ease;
   }
   .chips li:hover,
   .chips li:focus-visible {
-    color: var(--neon-ink);
-    background: #eafeff;
+    color: #ffffff;
+    background: var(--teal);
+    font-weight: bold;
     border-color: var(--neon);
     box-shadow: 0 0 0 .3mm var(--neon), 0 0 3mm rgba(23, 232, 255, .55);
     transform: translateY(-.4mm);
@@ -171,10 +186,14 @@
   .gantt .bar {
     position: absolute; top: 50%; height: 3.2mm; margin-top: -1.6mm;
     left: var(--s); width: var(--l);
-    border-radius: 1.6mm; background: var(--teal);
+    border-radius: 5mm;
+    border: .25mm solid rgba(201, 220, 215, .95);
+    background: var(--teal);
     transform-origin: left;
+    transition: filter .18s ease;
   }
   .gantt .bar.priv { background: var(--priv); }
+  .gantt .bar.priv:hover { filter: brightness(.80); }
   .gantt .axis { display: grid; grid-template-columns: var(--label) 1fr; margin-top: .6mm; }
   .gantt .years { position: relative; height: 3.6mm; font-size: 7.4pt; color: var(--slate); }
   .gantt .years span { position: absolute; top: 0; transform: translateX(-50%); }
@@ -196,19 +215,46 @@
   }
   .job:last-child { margin-bottom: 0; }
   .job.priv { border-left-color: var(--priv); }
+  .job.priv::before { background: #383838; }
   .job header { display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; }
-  .job h3 { font-size: 10.3pt; font-weight: 700; color: var(--ink); line-height: 1.25; }
-  .job .org { font-size: 9pt; font-weight: 600; color: var(--teal-ink); line-height: 1.3; }
-  .job .when { text-align: right; white-space: nowrap; flex: none; }
-  .job .when b    { display: block; font-size: 8.6pt; font-weight: 600; color: var(--ink); }
-  .job .when span { display: block; font-size: 7.9pt; color: var(--slate); }
+  .job h3 { font-size: 10.0pt; font-weight: 500; color: var(--priv); line-height: 1.25; } /* Titulo Cargo Trabajo*/
+  .job .org { font-size: 9pt; font-weight: 700; color: var(--teal-ink); line-height: 1.3; } 
+    .job .when {
+    text-align: right;
+    white-space: nowrap;
+    flex: none;
+    border: .25mm solid #c9dcd7;
+    border-radius: 5mm;
+    padding: 1mm 2.4mm;
+    background: #ffffff;
+    cursor: default;
+    transition: color .20s ease, background-color .20s ease, border-color .20s ease, transform .20s ease;
+  }
+  .job .when b    { display: block; font-size: 8.6pt; font-weight: 600; color: var(--ink); transition: color .20s ease; }
+  .job .when span { display: block; font-size: 7.9pt; color: var(--slate); transition: color .20s ease; }
+
+  .job:hover .when,
+  .job:focus-within .when,
+  .job .when.is-active {
+    background: var(--teal);
+    border-color: var(--teal);
+    transform: translateY(-.4mm);
+  }
+  .job:hover .when b,
+  .job:hover .when span,
+  .job:focus-within .when b,
+  .job:focus-within .when span,
+  .job .when.is-active b,
+  .job .when.is-active span {
+    color: #ffffff;
+  }
   .job ul { margin-top: 1.5mm; }
   .job li { position: relative; padding-left: 3.4mm; margin-bottom: .9mm; font-size: 9pt; }
   .job li::before {
     content: ""; position: absolute; left: 0; top: .66em;
     width: 1.7mm; height: .4mm; background: var(--teal);
   }
-  .job.priv li::before { background: #8fa3a8; }
+  
 
   /* ============ Pantalla: barra de acciones, ajuste y resaltado ============ */
   .toolbar {
@@ -269,15 +315,33 @@
   .pdf-btn { display: none !important; } 
   .sheet { zoom: 1; box-shadow: none; margin: 0; break-after: avoid; page-break-after: avoid; } 
   .sheet[data-hl] .gantt .row:not(.on) { opacity: 1; } 
-  .job.on { background: none; } 
+  .job.on { background: none; }
+  .meter i { animation: none !important; width: var(--v) !important; } 
   a { text-decoration: none !important; } 
-}
+  }
+
+  @keyframes llenarBarra {
+    0%   { width: 0; }
+    10%   { width: var(--v); }
+    99%  { width: var(--v); }
+    100% { width: 0; }
+  }
+
+  @media screen {
+    .meter i { animation: llenarBarra 10s ease-in-out infinite; }
+    .tools li:nth-child(1) .meter i { animation-delay: .10s; }
+    .tools li:nth-child(2) .meter i { animation-delay: .20s; }
+    .tools li:nth-child(3) .meter i { animation-delay: .30s; }
+    .tools li:nth-child(4) .meter i { animation-delay: .40s; }
+    .tools li:nth-child(5) .meter i { animation-delay: .50s; }
+    .tools li:nth-child(6) .meter i { animation-delay: .60s; }
+  }
 </style>
 </head>
 
 <body>
 
-<button type="button" class="pdf-btn" id="btn-print" title="Guardar como PDF" aria-label="Guardar como PDF">
+<button type="button" class="pdf-btn" id="btn-print" title="Guardar en PDF" aria-label="Guardar en PDF">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
 </button>
 
@@ -314,14 +378,14 @@
       <ul class="tools">
         <li><b>Excel avanzado</b>
           <div class="meter" style="--v:80%" role="img" aria-label="Excel avanzado, nivel 4 de 5"><i></i></div></li>
-        <li><b>Power BI</b>
-          <div class="meter" style="--v:60%" role="img" aria-label="Power BI, nivel 3 de 5"><i></i></div></li>
+        <li><b>Inteligencia Artificial</b>
+          <div class="meter" style="--v:80%" role="img" aria-label="Inteligencia artificial, nivel 4 de 5"><i></i></div></li>
         <li><b>Python</b>
           <div class="meter" style="--v:70%" role="img" aria-label="Python, nivel 3 de 5"><i></i></div></li>
+        <li><b>Power BI</b>
+          <div class="meter" style="--v:60%" role="img" aria-label="Power BI, nivel 2 de 5"><i></i></div></li>
         <li><b>SQL Server</b>
-          <div class="meter" style="--v:40%" role="img" aria-label="SQL Server, nivel 2 de 5"><i></i></div></li>
-        <li><b>Inteligencia artificial</b>
-          <div class="meter" style="--v:80%" role="img" aria-label="Inteligencia artificial, nivel 4 de 5"><i></i></div></li>
+          <div class="meter" style="--v:40%" role="img" aria-label="SQL Server, nivel 1 de 5"><i></i></div></li>
       </ul>
       <p class="tools extra"><b>FineReport</b> para reportes y dashboards.</p><br>
     </section>
@@ -330,7 +394,7 @@
       <h2>Formación</h2>
       <ul class="edu">
         <li><b>Desarrollo de Sistemas de Información</b>
-          <span>IDAT, 2024</span><span>5.º ciclo</span></li>
+          <span>IDAT, 2024 (5.º ciclo)</span></li>
         <li><b>Data Analytics</b>
           <span>Coderhouse, 2022 (46 horas)</span></li>
         <li><b>Power BI</b>
@@ -420,7 +484,7 @@
             <h3>Proceso administrativo</h3>
             <p class="org">Superintendencia Nacional de Fiscalización Laboral (SUNAFIL)</p>
           </div>
-          <p class="when"><b>Sep 2024 – Ago 2026</b></p>
+          <p class="when"><b>Sep 2024 – Jul 2026</b></p>
         </header>
         <ul>
           <li>Revisé y actualicé bases de datos en Excel para optimizar procesos.</li>
@@ -496,6 +560,35 @@
     }
     fit();
     window.addEventListener('resize', fit);
+
+    /* Al pasar el cursor por una barra de Trayectoria, enciende el
+    recuadro de fecha del trabajo correspondiente */
+    var rows = sheet.querySelectorAll('.gantt .row');
+
+    rows.forEach(function (row) {
+
+      var key = row.dataset.job;
+
+      var when = key && sheet.querySelector('.job[data-job="' + key + '"] .when');
+      var bar = row.querySelector('.bar');
+
+      if (!when) return;
+
+      row.addEventListener('mouseenter', function () {
+        when.classList.add('is-active');
+
+        if (bar) bar.classList.add('is-active');
+      });
+
+      row.addEventListener('mouseleave', function () {
+        when.classList.remove('is-active');
+
+        if (bar) bar.classList.remove('is-active');
+      });
+
+    });
+
+    /* Botón de exportación */
 
     /* Botón de exportación */
     document.getElementById('btn-print').addEventListener('click', function () { window.print(); });
