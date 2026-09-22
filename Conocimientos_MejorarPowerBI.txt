@@ -1,0 +1,9 @@
+
+Mejorar conocimientos en Power Bi
+
+Experiencia con desarrollo de ETL's con SSIS
+Experiencia en PLSQL y MSSQL, en el desarrollo de Vistas, Jobs, Triggers, Packages, etc.
+Experiencia en diseño y modelamiento de arquitectura de datos.
+Deseable Certificaciones en herramientas de CRO o UX
+Conocimientos de estadística básica (tests de significancia, correlación). 
+Familiaridad con plataformas de performance (Google Ads, Meta, LinkedIn).
