@@ -165,16 +165,26 @@
   .gantt .lbl { font-size: 8pt; color: var(--slate); white-space: nowrap; }
   .gantt .track {
     position: relative; height: 100%;
-    border-right: .25mm solid var(--line);
+    border-right: .25mm solid rgba(213, 226, 223, .32);
     background: repeating-linear-gradient(to right, var(--line) 0 .25mm, transparent .25mm 20%);
   }
   .gantt .bar {
     position: absolute; top: 50%; height: 3.2mm; margin-top: -1.6mm;
     left: var(--s); width: var(--l);
     border-radius: 1.6mm; background: var(--teal);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7.2pt; font-weight: 600; line-height: 1;
+    white-space: nowrap; overflow: hidden;
     transform-origin: left;
   }
-  .gantt .bar.priv { background: var(--priv); }
+  .gantt .bar.priv {
+    background: var(--priv);
+    color: var(--ink);
+  }
+  .gantt .bar::after {
+    content: attr(data-label);
+  }
   .gantt .axis { display: grid; grid-template-columns: var(--label) 1fr; margin-top: .6mm; }
   .gantt .years { position: relative; height: 3.6mm; font-size: 7.4pt; color: var(--slate); }
   .gantt .years span { position: absolute; top: 0; transform: translateX(-50%); }
@@ -266,6 +276,7 @@
   @media print {
     html, body { background: #fff; padding: 0; margin: 0; }
     .toolbar { display: none !important; }
+    .pdf-btn { display: none !important; }
     .sheet { zoom: 1; box-shadow: none; margin: 0; break-after: avoid; page-break-after: avoid; }
     .sheet[data-hl] .gantt .row:not(.on) { opacity: 1; }
     .job.on { background: none; }
@@ -378,19 +389,19 @@
       <div class="gantt">
         <div class="row" data-job="sunafil">
           <span class="lbl">SUNAFIL</span>
-          <div class="track"><i class="bar" style="--s:86.667%; --l:13.333%"></i></div>
+          <div class="track"><i class="bar" data-label="" style="--s:86.667%; --l:13.333%"></i></div>
         </div>
         <div class="row" data-job="sat">
           <span class="lbl">SAT</span>
-          <div class="track"><i class="bar" style="--s:70.833%; --l:15%"></i></div>
+          <div class="track"><i class="bar" data-label="" style="--s:70.833%; --l:15%"></i></div>
         </div>
         <div class="row" data-job="beneficencia">
           <span class="lbl">BL</span>
-          <div class="track"><i class="bar" style="--s:10.833%; --l:60%"></i></div>
+          <div class="track"><i class="bar" data-label="" style="--s:10.833%; --l:60%"></i></div>
         </div>
         <div class="row" data-job="pomar">
           <span class="lbl">INVERGEP SAC</span>
-          <div class="track"><i class="bar priv" style="--s:0.833%; --l:30%"></i></div>
+          <div class="track"><i class="bar priv" data-label="" style="--s:0.833%; --l:30%"></i></div>
         </div>
         <div class="axis" aria-hidden="true">
           <span></span>
