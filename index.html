@@ -182,19 +182,23 @@
     100% { width: 0; }
   }
   @media screen {
-    .meter i { animation: llenarBarra 10s ease-in-out infinite; }
-    .tools li:nth-child(1) .meter i { animation-delay: .10s; }
-    .tools li:nth-child(2) .meter i { animation-delay: .20s; }
-    .tools li:nth-child(3) .meter i { animation-delay: .30s; }
-    .tools li:nth-child(4) .meter i { animation-delay: .40s; }
-    .tools li:nth-child(5) .meter i { animation-delay: .50s; }
-    .tools li:nth-child(6) .meter i { animation-delay: .60s; }
+    .meter i { animation: none; }
+    .tools.skills-animate .meter i { animation: llenarBarra 10s ease-in-out;}
+    .tools li:nth-child(1) .meter i { animation-delay: .00s; }
+    .tools li:nth-child(2) .meter i { animation-delay: .30s; }
+    .tools li:nth-child(3) .meter i { animation-delay: .60s; }
+    .tools li:nth-child(4) .meter i { animation-delay: .90s; }
+    .tools li:nth-child(5) .meter i { animation-delay: 1.20s; }
+    .tools li:nth-child(6) .meter i { animation-delay: 1.50s; }
   }
   .tools .extra { font-size: 7.3pt; color: var(--slate); margin-top: 2.4mm; padding-top: 2.4mm; border-top: .25mm dashed var(--line); line-height: 1.3; }
 
   /* ---- Trayectoria (hover sincronizado con Experiencia; sin animación automática) ---- */
   .path .gantt { --label: 19mm; }
   .gantt .row { display: grid; grid-template-columns: var(--label) 1fr; align-items: center; height: 4mm; }
+
+
+  /*-- --*/
   .gantt .lbl { font-size: 6.8pt; color: var(--slate); white-space: nowrap; }
   .gantt .track {
     position: relative; height: 100%; border-right: .25mm solid var(--line);
@@ -580,8 +584,7 @@
     }
     function kpiCycle() {
       countUp();
-      kpiRuns++;
-      if (kpiRuns < KPI_LOOPS) setTimeout(kpiCycle, KPI_INTERVAL);
+      setTimeout(kpiCycle, KPI_INTERVAL);
     }
     window.addEventListener('beforeprint', kpiFinal);   /* el PDF siempre sale con los números completos */
 
@@ -598,6 +601,89 @@
     setTimeout(startAnimations, 400);
 
     var items = sheet.querySelectorAll('[data-job]');
+    
+    /* Hover automático de trayectoria */
+    var autoHoverIndex = 0;
+    var AUTO_HOVER_TIME = 1500;
+    var AUTO_HOVER_DELAY = 1000;
+    var autoHoverTimer = null;
+    var autoHoverPaused = false;
+
+    var skills = sheet.querySelector('.tools');
+    var SKILLS_TIME = 4500;
+
+    function iniciarHabilidades() {
+      if (autoHoverPaused || !skills) return;
+
+      skills.classList.remove('skills-animate');
+      void skills.offsetWidth;
+      skills.classList.add('skills-animate');
+
+      autoHoverTimer = setTimeout(function () {
+        skills.classList.remove('skills-animate');
+        iniciarHabilidadesSegunda();
+      }, SKILLS_TIME);
+    }
+
+    function iniciarHabilidadesSegunda() {
+      if (autoHoverPaused || !skills) return;
+
+      skills.classList.remove('skills-animate');
+      void skills.offsetWidth;
+      skills.classList.add('skills-animate');
+
+      autoHoverTimer = setTimeout(function () {
+        skills.classList.remove('skills-animate');
+        setActive(null);
+        autoHoverIndex = 0;
+        autoHoverTrayectoria();
+      }, SKILLS_TIME);
+    }
+
+    function autoHoverTrayectoria() {
+      if (autoHoverPaused || !items.length) return;
+      var key = items[autoHoverIndex].dataset.job;
+
+      setActive(key);
+      autoHoverIndex++;
+
+      if (autoHoverIndex < items.length) {
+        autoHoverTimer = setTimeout(autoHoverTrayectoria, AUTO_HOVER_TIME);
+      } else {
+        autoHoverIndex = 0;
+        autoHoverTimer = setTimeout(iniciarHabilidades, AUTO_HOVER_TIME);
+      }
+    }
+
+    function pauseAutoHover() {
+      autoHoverPaused = true;
+
+      if (autoHoverTimer) {
+        clearTimeout(autoHoverTimer);
+        autoHoverTimer = null;
+      }
+    }
+
+    function resumeAutoHover() {
+      if (!autoHoverPaused) return;
+
+      autoHoverPaused = false;
+
+      autoHoverTimer = setTimeout(function () {
+        setActive(null);
+        autoHoverTrayectoria();
+      }, AUTO_HOVER_DELAY);
+    }
+
+    items.forEach(function (el) {
+      el.addEventListener('mouseenter', pauseAutoHover);
+      el.addEventListener('mouseleave', resumeAutoHover);
+
+      el.addEventListener('focus', pauseAutoHover);
+      el.addEventListener('blur', resumeAutoHover);
+    });
+
+    setTimeout(autoHoverTrayectoria, AUTO_HOVER_DELAY);
 
     /* Resalta de forma sincronizada la fila de Trayectoria y la tarjeta de Experiencia */
     function setActive(key) {
